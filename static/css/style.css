@@ -1,0 +1,63 @@
+.layout-waterfall .mdl-layout__header-row .mdl-navigation__link:last-of-type {
+    padding-right: 0;
+}
+.card-wide.mdl-card {
+    margin: 16px;
+    width: 320px;
+
+    height: 320px;
+    background: #e0e0e0;
+}
+.card-wide> .mdl-card__menu {
+    color: #fff;
+}
+.card-musique> .mdl-card__title {
+    color: black;
+    height: 256px;
+    background: url('../img/musique-carte.jpg') center / cover no-repeat #FAFAFA;
+}
+.card-etudes> .mdl-card__title {
+    color: black;
+    height: 256px;
+    background: url('../img/etudes-carte.jpg') center / cover no-repeat #FAFAFA;
+}
+.card-archives> .mdl-card__title {
+    color: white;
+    height: 256px;
+    background: url('../img/archives-carte.jpg') center / cover no-repeat #FAFAFA;
+}
+.card-pro> .mdl-card__title {
+    color: black;
+    height: 256px;
+    background: url('../img/pro-carte.png') center / cover no-repeat #FAFAFA;
+}
+.card-informatique> .mdl-card__title {
+    color: white;
+    height: 256px;
+    background: url('../img/informatique-carte.jpg') center / cover no-repeat #FAFAFA;
+}
+body {
+    background: #c5cae9 !important;
+}
+.hintText {
+    font-size: 12px !important;
+}
+#buttonLogIn {
+    disabled: true;
+}
+.mdl-layout-title {
+    padding-right: 64px;
+}
+.mdl-grid {
+    max-width : 800px;
+}
+.layout-subtitle {
+    color : white !important;
+    text-decoration : none;
+}
+.navigation-layout {
+    padding : 12px !important;
+}
+#retour-Accueil {
+    padding-left : 12px;
+}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block contenu %}
+{% for bloc in cartes %}
+<div class="card-wide mdl-card mdl-cell--6-col mdl-shodow--3dp">
+    <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text"> {{ bloc.title }}</h2>
+    </div>
+    {% if bloc.hasCommentaire %}
+    <div class="mdl-card__supporting-text">
+        {{ bloc.commentaire }}
+    </div>
+    {% endif %}
+    {% if bloc.hasActions %}
+    <div class="mdl-card__actions mdl-card--border">
+        {% for action in bloc.actions %}
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="{{ action.onclic }}">
+            {{ action.title }}
+        </a>
+        {% empty %}
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+            Nothing to do with this ...
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+
+{% endblock %}
