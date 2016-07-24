@@ -134,7 +134,7 @@ def index(request, folder="None"):
 
 
 def connexion(request):
-    error = False
+    loginError = False
     if request.method == "POST":
         form = ConnexionForm(request.POST)
         if form.is_valid():
@@ -147,7 +147,7 @@ def connexion(request):
                 print("NEXT PAGE : ", nextPage)
                 return redirect('index', folder=nextPage)
             else:
-                error = True
+                loginError = True
                 form = ConnexionForm(
                     initial={'nextPage': form.cleaned_data['nextPage']})
     elif request.GET and 'next' in request.GET and request.GET['next']:
