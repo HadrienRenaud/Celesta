@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 {% block contenu %}
+
+Welcome back : {{ request.user }}
+
 {% for bloc in cartes %}
 <div class="card-wide mdl-card mdl-cell--6-col mdl-shodow--3dp">
     <div class="mdl-card__title">

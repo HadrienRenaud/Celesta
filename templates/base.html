@@ -38,13 +38,11 @@
                 <!-- Navigation. We hide it in small screens. -->
                 <nav class="mdl-navigation mdl-layout--large-screen-only">
                     {% for sub in subtitle %}
-                    <a class="mdl-navigation__link navigation-layout" href="{% url 'index' sub.link %}">{{ sub.text }}</a>
-                    /
-                    {% endfor %}
+                    <a class="mdl-navigation__link navigation-layout" href="{% url 'index' sub.link %}">{{ sub.text }}</a> / {% endfor %}
                     <a class="mdl-navigation__link" id="retour-Accueil" href="{% url 'index' '/' %}">Célesta</a>
                 </nav>
-                <form action="controller/logout.php">
-                    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" link="controller/logout.php">
+                <form action="{% url 'deconnexion' folder %}">
+                    <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" link="deconnexion">
                         <i class="material-icons">exit_to_app</i>
                     </button>
                 </form>
@@ -53,6 +51,11 @@
 
         <div class="mdl-layout__drawer">
             <span class="mdl-layout-title">Hadibou</span>
+
+            <div class="mdl-layout-title" id="drawer-subtitle">Welcome {{ request.user }} !</div>
+
+            <div class="mdl-layout-spacer"></div>
+
             <nav class="mdl-navigation">
                 <a class="mdl-navigation__link" href="">Accueil</a>
                 <a class="mdl-navigation__link" href="">Informatique</a>
