@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.utils.http import urlencode
 from django.http.response import HttpResponseRedirect
+
 # modules perso
 from .forms import ConnexionForm
 from . import models
@@ -17,6 +18,12 @@ from . import models
 from pathlib import Path
 from re import search
 
+# ***********************  Data  ***************************************
+
+IMG = ['png', 'jpg', 'gif']
+COMMENT = "Fichier : {fichier} Extension : {extension}"
+ID_BLOC = "idBloc_"
+STYLE = """#{id} \{ {propriete} \}"""
 
 # ***********************  Traitement de données  ************************
 
@@ -27,16 +34,6 @@ def custom_redirect(url_name, *args, **kwargs):
     return HttpResponseRedirect(url + "?%s" % params)
 
 
-def actionneur(fichier):
-    listeActions = []
-    pFichier = Path(fichier)
-    if pFichier.is_dir():
-        title = "OPEN"
-        onclic = "href=/bouzzi/" + changeDirectory(str(fichier))
-        listeActions.append(Action(title=title, onclic=onclic))
-    return listeActions
-
-
 class Dossier:
 
     def __init__(self, folder=''):
@@ -44,34 +41,86 @@ class Dossier:
         self.path_obj = Path(folder)
         self.iterdir = self.path_obj.iterdir
 
-    def getFiles(self, folder=''):
+    def getFiles(self):
         return [fichier for fichier in self.iterdir()]
 
     def getBlocs(self):
         blocList = []
         for fichier in self.getFiles():
-            nomFichier = str(fichier).split('/')[-1]
-            title = nomFichier
-            if '.' in nomFichier:
-                extension = title.split('.')[-1]
-            else:
-                extension = ""
-            commentaire = "File : " + \
-                str(fichier) + " Extension : " + extension
-            actions = actionneur(fichier)
-            blocList.append(
-                Bloc(title=title, commentaire=commentaire, actions=actions))
+            bloc = Bloc(Fichier)
+            bloc.calculer()
+            blocList.append(bloc)
         return blocList
+
+    def subtitleur(self):
+        foldList = self.folder.split('/')
+        subtitleList = []
+        for i, sub in enumerate(foldList):
+            subtitleList.append(SubtitleLink(
+                text=sub, link='/'.join(foldList[:i + 1])))
+        subtitleList.reverse()
+        return subtitleList
+
+    def getContext(self):
+        context = {
+            'folder': self.folder,
+            'subtitles': self.subtitleur(),
+            'cartes': self.getBlocs()
+        }
+        return context
 
 
 class Bloc:
 
-    def __init__(self, title='', commentaire='', actions=[]):
-        self.title = title
-        self.commentaire = commentaire
-        self.actions = actions
-        self.hasCommentaire = (len(commentaire) > 0)
-        self.hasActions = (len(actions) > 0)
+    def __init__(self, fichier=""):
+        self.fichier = fichier  # fichier est normalement de type Path
+        # calcul du nom de fichier
+        self.nomFichier = str(fichier).split('/')[-1]
+        # calcul de l'extension
+        if '.' in self.nomFichier:
+            self.extension = self.nomFichier.split('.')[-1]
+        else:
+            self.extension = ""
+        # calcul de l'id
+        self.id_css = ID_BLOC + "_".join(self.nomFichier.split())
+        # mise par défaut des autres paramètres
+        self.title = ""
+        self.commentaire = ""
+        self.actions = ""
+        self.hasCommentaire = False
+        self.hasActions = False
+        self.style = ""
+
+    def calculer(self):
+        self.calcStyle()
+        self.calcCommentaire()
+        self.calcAction()
+        self.calcTitle()
+
+    def calcStyle(self):
+        sefl.style = ""
+        if self.extension in IMG:
+            style = """#{id} \{ {propriete} \}""".format(
+                id=self.id_css, propriete="background: red;")
+            self.style += style
+
+    def calcCommentaire(self):
+        self.commentaire = COMMENT.format(
+            fichier=str(self.fichier), extension=self.extension)
+        self.hasCommentaire = True
+
+    def calcTitle(self):
+        self.title = self.nomFichier
+
+    def calcAction(self):
+        self.hasActions = False
+        self.actions = []
+        if self.fichier.is_dir():
+            title = "OPEN"
+            onclic = 'href="/bouzzi/' + \
+                changeDirectory(str(self.fichier)) + '" '
+            self.actions.append(Action(title=title, onclic=onclic))
+            self.hasActions = True
 
 
 class Action:
@@ -88,29 +137,15 @@ class SubtitleLink:
         self.link = link
 
 
-def subtitleur(folder):
-    foldList = folder.split('/')
-    subtitleList = []
-    for i, sub in enumerate(foldList):
-        subtitleList.append(SubtitleLink(
-            text=sub, link='/'.join(foldList[:i + 1])))
-    subtitleList.reverse()
-    return subtitleList
-
-
 def carteur(folder):
     if folder == 'None' or folder == "" or folder == "deconnexion":
         return {'folder': "None", 'subtitle': [SubtitleLink(text='Index')], 'cartes': []}
     try:
-        cartes = Dossier("bouzzi/links/" + folder).getBlocs()
+        directory = Dossier("bouzzi/links/" + folder)
+        context = directory.getContext()
     except FileNotFoundError:
         raise Http404(
             "FileNotFoundError : Ceci n'est pas un dossier valide : " + folder)
-    context = {
-        'folder': folder,
-        'subtitle': subtitleur(folder),
-        "cartes": cartes,
-    }
     return context
 
 
