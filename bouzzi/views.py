@@ -27,8 +27,14 @@ def custom_redirect(url_name, *args, **kwargs):
     return HttpResponseRedirect(url + "?%s" % params)
 
 
-def actionneur(extension):
-    return []
+def actionneur(fichier):
+    listeActions = []
+    pFichier = Path(fichier)
+    if pFichier.is_dir():
+        title = "OPEN"
+        onclic = "href=/bouzzi/" + changeDirectory(str(fichier))
+        listeActions.append(Action(title=title, onclic=onclic))
+    return listeActions
 
 
 class Dossier:
@@ -39,20 +45,20 @@ class Dossier:
         self.iterdir = self.path_obj.iterdir
 
     def getFiles(self, folder=''):
-        return [file for file in self.iterdir()]
+        return [fichier for fichier in self.iterdir()]
 
     def getBlocs(self):
         blocList = []
-        for file in self.getFiles():
-            nomFichier = str(file).split('/')[-1]
+        for fichier in self.getFiles():
+            nomFichier = str(fichier).split('/')[-1]
             title = nomFichier
             if '.' in nomFichier:
                 extension = title.split('.')[-1]
             else:
                 extension = ""
             commentaire = "File : " + \
-                str(file) + " Extension : " + extension
-            actions = actionneur(extension)
+                str(fichier) + " Extension : " + extension
+            actions = actionneur(fichier)
             blocList.append(
                 Bloc(title=title, commentaire=commentaire, actions=actions))
         return blocList
@@ -110,11 +116,9 @@ def carteur(folder):
 
 def changeDirectory(folder):
     prev_folder = folder
-    print("Avant :", folder)
-    recherche = search(r'^[(?:bouzzi)/]*(?P<newFolder>.*)$', folder)
+    recherche = search(r'^[(?:bouzzi)/(?:links)]*(?P<newFolder>.*)$', folder)
     if recherche:
         folder = recherche.group('newFolder')
-        print("Après :", folder)
     return folder
 
 

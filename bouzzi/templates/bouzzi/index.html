@@ -2,8 +2,6 @@
 {% load static %}
 {% block contenu %}
 
-Welcome back : {{ request.user }}
-
 {% for bloc in cartes %}
 <div class="card-wide mdl-card mdl-cell--6-col mdl-shodow--3dp">
     <div class="mdl-card__title">
@@ -17,7 +15,7 @@ Welcome back : {{ request.user }}
     {% if bloc.hasActions %}
     <div class="mdl-card__actions mdl-card--border">
         {% for action in bloc.actions %}
-        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="{{ action.onclic }}">
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" {{ action.onclic }} >
             {{ action.title }}
         </a>
         {% empty %}
