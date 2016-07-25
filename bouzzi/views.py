@@ -56,6 +56,16 @@ class Dossier:
             blocList.append(
                 Bloc(title=title, commentaire=commentaire, actions=actions))
         return blocList
+       
+       
+    def subtitleur(self):
+    foldList = self.folder.split('/')
+    subtitleList = []
+    for i, sub in enumerate(foldList):
+        subtitleList.append(SubtitleLink(
+            text=sub, link='/'.join(foldList[:i + 1])))
+    subtitleList.reverse()
+    return subtitleList
 
 
 class Bloc:
@@ -82,27 +92,21 @@ class SubtitleLink:
         self.link = link
 
 
-def subtitleur(folder):
-    foldList = folder.split('/')
-    subtitleList = []
-    for i, sub in enumerate(foldList):
-        subtitleList.append(SubtitleLink(
-            text=sub, link='/'.join(foldList[:i + 1])))
-    subtitleList.reverse()
-    return subtitleList
+
 
 
 def carteur(folder):
     if folder == 'None' or folder == "" or folder == "deconnexion":
         return {'folder': "None", 'subtitle': [SubtitleLink(text='Index')], 'cartes': []}
     try:
-        cartes = Dossier("bouzzi/links/" + folder).getBlocs()
+        directory = Dossier("bouzzi/links/" + folder)
+        cartes = directory.getBlocs()
     except FileNotFoundError:
         raise Http404(
             "FileNotFoundError : Ceci n'est pas un dossier valide : " + folder)
     context = {
         'folder': folder,
-        'subtitle': subtitleur(folder),
+        'subtitle': directory.subtitleur(),
         "cartes": cartes,
     }
     return context
