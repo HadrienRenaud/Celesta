@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.utils.http import urlencode
 from django.http.response import HttpResponseRedirect
+
 # modules perso
 from .forms import ConnexionForm
 from . import models
@@ -56,16 +57,23 @@ class Dossier:
             blocList.append(
                 Bloc(title=title, commentaire=commentaire, actions=actions))
         return blocList
-       
-       
+     
     def subtitleur(self):
-    foldList = self.folder.split('/')
-    subtitleList = []
-    for i, sub in enumerate(foldList):
-        subtitleList.append(SubtitleLink(
-            text=sub, link='/'.join(foldList[:i + 1])))
-    subtitleList.reverse()
-    return subtitleList
+        foldList = self.folder.split('/')
+        subtitleList = []
+        for i, sub in enumerate(foldList):
+            subtitleList.append(SubtitleLink(
+                text=sub, link='/'.join(foldList[:i + 1])))
+        subtitleList.reverse()
+        return subtitleList
+    
+    def getContext(self):
+        context = {
+            'folder' : self.folder,
+            'subtitles' : self.subtitleur(),
+            'cartes' : self.getBlocs()
+            }
+        return context
 
 
 class Bloc:
@@ -76,6 +84,7 @@ class Bloc:
         self.actions = actions
         self.hasCommentaire = (len(commentaire) > 0)
         self.hasActions = (len(actions) > 0)
+        
 
 
 class Action:
@@ -92,23 +101,15 @@ class SubtitleLink:
         self.link = link
 
 
-
-
-
 def carteur(folder):
     if folder == 'None' or folder == "" or folder == "deconnexion":
         return {'folder': "None", 'subtitle': [SubtitleLink(text='Index')], 'cartes': []}
     try:
         directory = Dossier("bouzzi/links/" + folder)
-        cartes = directory.getBlocs()
+        context = directory.getContext()
     except FileNotFoundError:
         raise Http404(
             "FileNotFoundError : Ceci n'est pas un dossier valide : " + folder)
-    context = {
-        'folder': folder,
-        'subtitle': directory.subtitleur(),
-        "cartes": cartes,
-    }
     return context
 
 
