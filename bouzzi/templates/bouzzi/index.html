@@ -6,6 +6,9 @@ Welcome back : {{ request.user }}
 
 {% for bloc in cartes %}
 <div class="card-wide mdl-card mdl-cell--6-col mdl-shodow--3dp">
+    <style type="text/css">
+        {{ bloc.style }}
+    </style>
     <div class="mdl-card__title">
         <h2 class="mdl-card__title-text"> {{ bloc.title }}</h2>
     </div>
